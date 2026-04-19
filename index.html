@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT MTsN 12 JKT</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- LOGIN SREEN -->
+    <div id="login-view" class="view active-view">
+        <div class="login-container">
+            <div class="login-box glass-panel">
+                <div class="login-header">
+                    <div class="logo-placeholder">CBT</div>
+                    <h2>Ujian Berbasis Komputer</h2>
+                    <p>MTsN 12 JAKARTA</p>
+                </div>
+                <form id="login-form">
+                    <div class="input-group">
+                        <i class="ri-user-line"></i>
+                        <input type="text" id="username" class="input-control" placeholder="Username (Admin) / NIS (Siswa)" required autocomplete="off">
+                    </div>
+                    <div class="input-group">
+                        <i class="ri-lock-line"></i>
+                        <input type="password" id="password" class="input-control" placeholder="Kata Sandi" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Masuk <i class="ri-arrow-right-line"></i></button>
+                </form>
+            </div>
+            <div class="login-illustration">
+                <!-- Abstract shapes for aesthetic -->
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN VIEW -->
+    <div id="admin-view" class="view">
+        <aside class="sidebar glass-panel">
+            <div class="sidebar-header">
+                <h2>CBT Admin</h2>
+                <span class="badge">MTsN 12 JKT</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="beranda"><i class="ri-dashboard-line"></i> Beranda</a>
+                <a href="#" class="nav-item" data-target="peserta"><i class="ri-group-line"></i> Peserta Ujian</a>
+                <a href="#" class="nav-item" data-target="soal"><i class="ri-file-list-3-line"></i> Bank Soal</a>
+                <a href="#" class="nav-item" data-target="hasil"><i class="ri-bar-chart-box-line"></i> Hasil Ujian</a>
+                <a href="#" class="nav-item" data-target="pengaturan"><i class="ri-settings-3-line"></i> Pengaturan</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="btn-logout-admin" class="btn btn-danger btn-block"><i class="ri-logout-box-r-line"></i> Keluar</button>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <!-- BERANDA -->
+            <section id="beranda-section" class="content-section active-section">
+                <header class="section-header">
+                    <div>
+                        <h1>Beranda</h1>
+                        <p>Selamat datang di panel admin CBT MTsN 12 Jakarta.</p>
+                    </div>
+                    <div class="clock" id="admin-clock">00:00:00</div>
+                </header>
+                
+                <div class="dashboard-stats">
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon bg-blue"><i class="ri-group-line"></i></div>
+                        <div class="stat-details">
+                            <h3>Total Siswa</h3>
+                            <p id="stat-siswa">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon bg-purple"><i class="ri-file-text-line"></i></div>
+                        <div class="stat-details">
+                            <h3>Bank Soal</h3>
+                            <p id="stat-soal">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon bg-green"><i class="ri-checkbox-circle-line"></i></div>
+                        <div class="stat-details">
+                            <h3>Selesai Ujian</h3>
+                            <p id="stat-selesai">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card glass-panel">
+                        <div class="stat-icon bg-orange"><i class="ri-time-line"></i></div>
+                        <div class="stat-details">
+                            <h3>Status Ujian</h3>
+                            <p id="stat-status">Ditutup</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PESERTA UJIAN -->
+            <section id="peserta-section" class="content-section">
+                <header class="section-header">
+                    <div>
+                        <h1>Peserta Ujian</h1>
+                        <p>Kelola data siswa yang akan mengikuti ujian.</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-outline" id="btn-add-bulk"><i class="ri-file-add-line"></i> Tambah Banyak</button>
+                        <button class="btn btn-primary" id="btn-add-siswa"><i class="ri-user-add-line"></i> Tambah Siswa</button>
+                    </div>
+                </header>
+                <div class="card glass-panel flex-row">
+                    <select id="filter-kelas" class="input-control">
+                        <option value="Semua">Semua Kelas</option>
+                        <!-- Options generated in JS -->
+                    </select>
+                    <input type="text" id="search-siswa" class="input-control" placeholder="Cari NIS / Nama...">
+                </div>
+                <div class="card glass-panel mt-4">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>NIS</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Kelas</th>
+                                    <th>Sandi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-siswa">
+                                <!-- Data inject here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BANK SOAL -->
+            <section id="soal-section" class="content-section">
+                <header class="section-header">
+                    <div>
+                        <h1>Bank Soal</h1>
+                        <p>Kelola daftar soal ujian.</p>
+                    </div>
+                    <div class="header-actions">
+                        <label class="btn btn-outline">
+                            <i class="ri-upload-2-line"></i> Upload Word
+                            <input type="file" id="upload-word" accept=".docx" hidden>
+                        </label>
+                        <button class="btn btn-primary" id="btn-add-soal"><i class="ri-add-line"></i> Buat Manual</button>
+                    </div>
+                </header>
+                <div class="card glass-panel mt-4">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th width="50">No</th>
+                                    <th>Tipe Soal</th>
+                                    <th>Potongan Teks Soal</th>
+                                    <th>Kunci Jawaban</th>
+                                    <th width="100">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-soal">
+                                <!-- Data inject here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HASIL UJIAN -->
+            <section id="hasil-section" class="content-section">
+                <header class="section-header">
+                    <div>
+                        <h1>Hasil Ujian</h1>
+                        <p>Rekapitulasi nilai dan jawaban peserta berdasarkan kelas.</p>
+                    </div>
+                    <div class="header-actions">
+                        <select id="filter-hasil-kelas" class="input-control">
+                            <option value="Semua">Semua Kelas</option>
+                        </select>
+                        <button class="btn btn-success" id="btn-download-excel"><i class="ri-file-excel-2-line"></i> Unduh Excel</button>
+                    </div>
+                </header>
+                <div class="card glass-panel mt-4">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>NIS</th>
+                                    <th>Nama</th>
+                                    <th>Kelas</th>
+                                    <th>Mata Pelajaran</th>
+                                    <th>Nilai Akhir</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-hasil">
+                                <!-- Data inject here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PENGATURAN -->
+            <section id="pengaturan-section" class="content-section">
+                <header class="section-header">
+                    <div>
+                        <h1>Pengaturan Ujian</h1>
+                        <p>Konfigurasi parameter ujian yang sedang berjalan.</p>
+                    </div>
+                </header>
+                <div class="settings-grid">
+                    <div class="card glass-panel">
+                        <h3>Informasi Ujian</h3>
+                        <div class="form-group">
+                            <label>Mata Pelajaran</label>
+                            <input type="text" id="setting-mapel" class="input-control" placeholder="Contoh: Matematika">
+                        </div>
+                        <div class="form-group">
+                            <label>Durasi Waktu (Menit)</label>
+                            <input type="number" id="setting-durasi" class="input-control" placeholder="Contoh: 120" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Token Ujian (Opsional)</label>
+                            <div class="flex-row">
+                                <input type="text" id="setting-token" class="input-control" placeholder="Kode Token">
+                                <button class="btn btn-outline" id="btn-generate-token"><i class="ri-refresh-line"></i></button>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mt-2" id="btn-save-settings"><i class="ri-save-line"></i> Simpan Pengaturan</button>
+                    </div>
+                    
+                    <div class="card glass-panel">
+                        <h3>Kontrol Ujian</h3>
+                        <div class="status-indicator" id="exam-status-indicator">
+                            <i class="ri-record-circle-line"></i> <span id="exam-status-text">Ujian saat ini DITUTUP. Peserta tidak dapat login.</span>
+                        </div>
+                        <div class="mt-4 flex-row">
+                            <button class="btn btn-success flex-1" id="btn-start-exam"><i class="ri-play-line"></i> Buka Ujian</button>
+                            <button class="btn btn-danger flex-1" id="btn-stop-exam"><i class="ri-stop-mini-line"></i> Tutup Ujian</button>
+                        </div>
+                        <hr class="my-4" style="border-color: rgba(0,0,0,0.1)">
+                        <div class="form-group mt-4">
+                            <p class="text-danger mb-2"><i class="ri-alert-line"></i> <b>Reset Data (ZONA BAHAYA)</b></p>
+                            <button class="btn btn-outline text-danger btn-block" id="btn-reset-all">Hapus Semua Data Sistem</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- STUDENT VIEW -->
+    <div id="siswa-view" class="view">
+        <header class="siswa-header glass-panel">
+            <div class="siswa-brand">CBT MTsN 12 JKT</div>
+            <div class="siswa-info">
+                <div class="info-item">
+                    <i class="ri-user-line"></i> <span id="siswa-nama-display">Nama Siswa</span>
+                </div>
+                <div class="info-item">
+                    <i class="ri-book-read-line"></i> <span id="siswa-mapel-display">Mata Pelajaran</span>
+                </div>
+                <div class="timer-box" id="exam-timer">
+                    00:00:00
+                </div>
+            </div>
+            <button class="btn btn-danger" id="btn-selesai-ujian"><i class="ri-checkbox-circle-line"></i> Selesai Pekerjaan</button>
+        </header>
+
+        <div class="siswa-container">
+            <!-- Token input overlay (shown if token required) -->
+            <div id="token-overlay" class="glass-panel text-center">
+                <h2>Masukkan Token Ujian</h2>
+                <p>Silakan tanyakan kepada pengawas ujian</p>
+                <div class="flex-row justify-center mt-4" style="max-width: 300px; margin: 20px auto;">
+                    <input type="text" id="input-siswa-token" class="input-control text-center text-lg" placeholder="TOKEN">
+                </div>
+                <button class="btn btn-primary" id="btn-submit-token">Mulai Mengerjakan</button>
+            </div>
+
+            <main class="soal-area" style="display: none;" id="soal-area-main">
+                <div class="soal-header">
+                    <h2 id="soal-nomor-display">Soal No. 1</h2>
+                    <span class="soal-tipe-badge" id="soal-tipe-display">Pilihan Ganda</span>
+                </div>
+                
+                <div class="soal-content" id="soal-tek-display">
+                    <!-- Text and images of the question injected here -->
+                </div>
+
+                <div class="opsi-area" id="opsi-container">
+                    <!-- Options injected here based on question type -->
+                </div>
+
+                <div class="soal-nav-buttons mt-4">
+                    <button class="btn btn-outline" id="btn-prev-soal"><i class="ri-arrow-left-line"></i> Sebelumnya</button>
+                    <label class="checkbox-ragu">
+                        <input type="checkbox" id="chk-ragu"> Ragu-Ragu
+                    </label>
+                    <button class="btn btn-primary" id="btn-next-soal">Selanjutnya <i class="ri-arrow-right-line"></i></button>
+                </div>
+            </main>
+
+            <aside class="navigasi-sidebar glass-panel" style="display: none;" id="navigasi-area-main">
+                <h3>Navigasi Soal</h3>
+                <div class="navigasi-grid" id="navigasi-grid-container">
+                    <!-- Nav buttons injected here -->
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Modals Overlay -->
+    <div id="modal-overlay" class="modal-overlay">
+        <!-- Modal Tambah Siswa Manual -->
+        <div id="modal-siswa" class="modal glass-panel">
+            <div class="modal-header">
+                <h3>Tambah / Edit Siswa</h3>
+                <button class="btn-close-modal"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-siswa">
+                    <div class="form-group">
+                        <label>NIS</label>
+                        <input type="text" id="input-siswa-nis" class="input-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Siswa</label>
+                        <input type="text" id="input-siswa-nama" class="input-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kelas</label>
+                        <select id="input-siswa-kelas" class="input-control" required>
+                            <!-- Generated via JS -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kata Sandi</label>
+                        <input type="text" id="input-siswa-sandi" class="input-control" value="siswa123" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block mt-4">Simpan Data</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Tambah Bulk -->
+        <div id="modal-bulk" class="modal glass-panel">
+            <div class="modal-header">
+                <h3>Tambah Banyak Siswa</h3>
+                <button class="btn-close-modal"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Format: <b>NIS,Nama Siswa,Kelas,Sandi</b>. Pisahkan dengan baris baru.</p>
+                <textarea id="input-bulk-data" class="input-control mt-2" rows="8" placeholder="1001,Ahmad Fulan,VII.1,siswa123&#10;1002,Budi Santoso,VII.1,siswa123"></textarea>
+                <button id="btn-save-bulk" class="btn btn-primary btn-block mt-4">Proses Data</button>
+            </div>
+        </div>
+
+        <!-- Modal Tambah Soal Manual -->
+        <div id="modal-soal" class="modal glass-panel modal-lg">
+            <div class="modal-header">
+                <h3>Tambah / Edit Soal</h3>
+                <button class="btn-close-modal"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <form id="form-soal">
+                    <div class="form-group">
+                        <label>Tipe Soal</label>
+                        <select id="input-soal-tipe" class="input-control" required>
+                            <option value="PG">Pilihan Ganda (PG)</option>
+                            <option value="Kompleks">Ganda Kompleks</option>
+                            <option value="BS">Benar / Salah (BS)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Teks Soal (Bisa masukkan HTML atau LaTeX dengan \( \))</label>
+                        <textarea id="input-soal-teks" class="input-control" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Sisipkan Gambar (Opsional)</label>
+                        <input type="file" id="input-soal-gambar" accept="image/*" class="input-control">
+                        <img id="preview-soal-gambar" style="max-width: 100%; max-height: 200px; display: none; margin-top: 10px; border-radius: 8px;">
+                    </div>
+                    
+                    <div id="opsi-editor-container">
+                        <!-- Dynamic based on tipe soal -->
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block mt-4">Simpan Soal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.5.1/mammoth.browser.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <!-- Application Logic -->
+    <script src="db.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
