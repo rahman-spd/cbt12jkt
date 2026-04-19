@@ -147,6 +147,9 @@ const App = {
         });
         document.getElementById('btn-save-settings').addEventListener('click', async () => {
             await DB.savePengaturan({
+                jenisUjian: document.getElementById('setting-jenis-ujian').value,
+                tahunAjaran: document.getElementById('setting-tahun-ajaran').value,
+                semester: document.getElementById('setting-semester').value,
                 mapel: document.getElementById('setting-mapel').value,
                 durasi: parseInt(document.getElementById('setting-durasi').value) || 120,
                 token: document.getElementById('setting-token').value
@@ -223,15 +226,18 @@ const App = {
 
         document.getElementById('form-soal').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const jenisUjian = document.getElementById('input-soal-jenis').value;
+            const tahunAjaran = document.getElementById('input-soal-tahun').value;
+            const semester = document.getElementById('input-soal-semester').value;
             const tipe = document.getElementById('input-soal-tipe').value;
             const teks = document.getElementById('input-soal-teks').value;
             const imgEl = document.getElementById('preview-soal-gambar');
             const imgData = imgEl.style.display === 'block' ? imgEl.src : null;
             
-            const soalObj = { tipe, teks, imgData, opsi: [], jawabanBenar: [] };
+            const soalObj = { jenisUjian, tahunAjaran, semester, tipe, teks, imgData, opsi: [], jawabanBenar: [] };
 
             if (tipe === 'PG') {
-                ['A','B','C','D','E'].forEach(o => {
+                ['A','B','C','D'].forEach(o => {
                     soalObj.opsi.push({ label: o, text: document.getElementById(`opsi-${o}`).value });
                 });
                 soalObj.jawabanBenar.push(document.getElementById('key-pg').value);
@@ -404,6 +410,9 @@ const App = {
             this.renderTableHasil();
         } else if (target === 'pengaturan') {
             const config = await DB.getPengaturan();
+            if(document.getElementById('setting-jenis-ujian')) document.getElementById('setting-jenis-ujian').value = config.jenisUjian || 'Formatif 1';
+            if(document.getElementById('setting-tahun-ajaran')) document.getElementById('setting-tahun-ajaran').value = config.tahunAjaran || '';
+            if(document.getElementById('setting-semester')) document.getElementById('setting-semester').value = config.semester || '';
             document.getElementById('setting-mapel').value = config.mapel;
             document.getElementById('setting-durasi').value = config.durasi;
             document.getElementById('setting-token').value = config.token;
@@ -467,11 +476,11 @@ const App = {
         const c = document.getElementById('opsi-editor-container');
         if (t === 'PG') {
             let ht = '';
-            ['A','B','C','D','E'].forEach(o => {
+            ['A','B','C','D'].forEach(o => {
                 ht += `<div class="form-group"><div class="flex-row"><span style="width:30px; font-weight:bold;">${o}.</span><input type="text" id="opsi-${o}" class="input-control" placeholder="Teks opsi..." required></div></div>`;
             });
             ht += `<div class="form-group"><label>Kunci Jawaban</label><select id="key-pg" class="input-control">
-                <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>`;
+                <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>`;
             c.innerHTML = ht;
         } else if (t === 'Kompleks') {
             let ht = '<p><small>Isi opsi, centang mana saja yang merupakan jawaban benar</small></p>';
@@ -493,6 +502,10 @@ const App = {
         tb.innerHTML = data.map((s, i) => `
             <tr>
                 <td>${i+1}</td>
+                <td>
+                    ${s.jenisUjian || '-'} <br>
+                    <small style="opacity:0.7">${s.tahunAjaran || '-'} | ${s.semester || '-'}</small>
+                </td>
                 <td><span class="badge" style="background:var(--secondary)">${s.tipe}</span></td>
                 <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.teks}</td>
                 <td><b>${s.jawabanBenar.join(', ')}</b></td>
@@ -571,10 +584,19 @@ const App = {
         document.getElementById('token-overlay').style.display = 'none';
         
         const cfg = await DB.getPengaturan();
-        const rawSoal = await DB.getSoal();
+        let rawSoal = await DB.getSoal();
+        
+        // Filter based on the exam configurations
+        if (cfg.jenisUjian) {
+            rawSoal = rawSoal.filter(s => 
+                (!s.jenisUjian || s.jenisUjian === cfg.jenisUjian) &&
+                (!s.tahunAjaran || s.tahunAjaran === cfg.tahunAjaran) &&
+                (!s.semester || s.semester === cfg.semester)
+            );
+        }
         
         if (rawSoal.length === 0) {
-            Swal.fire('Maaf', 'Belum ada soal tersedia.', 'error');
+            Swal.fire('Maaf', 'Belum ada soal tersedia untuk ujian ini.', 'error');
             return;
         }
 

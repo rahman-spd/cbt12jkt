@@ -19,6 +19,9 @@ const DB = {
         const settings = await this.stores.pengaturan.getItem('config');
         if (!settings) {
             await this.stores.pengaturan.setItem('config', {
+                jenisUjian: 'Formatif 1',
+                tahunAjaran: '2023/2024',
+                semester: 'Ganjil',
                 mapel: 'Matematika',
                 durasi: 120, // minutes
                 token: '', // empty means no token required

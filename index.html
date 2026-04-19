@@ -167,6 +167,7 @@
                             <thead>
                                 <tr>
                                     <th width="50">No</th>
+                                    <th>Kategori</th>
                                     <th>Tipe Soal</th>
                                     <th>Potongan Teks Soal</th>
                                     <th>Kunci Jawaban</th>
@@ -227,6 +228,33 @@
                 <div class="settings-grid">
                     <div class="card glass-panel">
                         <h3>Informasi Ujian</h3>
+                        <div class="form-group">
+                            <label>Jenis Ujian / Soal</label>
+                            <select id="setting-jenis-ujian" class="input-control">
+                                <option value="Formatif 1">Formatif 1</option>
+                                <option value="Formatif 2">Formatif 2</option>
+                                <option value="Formatif 3">Formatif 3</option>
+                                <option value="Formatif 4">Formatif 4</option>
+                                <option value="Formatif 5">Formatif 5</option>
+                                <option value="Formatif 6">Formatif 6</option>
+                                <option value="Sumatif 1">Sumatif 1</option>
+                                <option value="Sumatif 2">Sumatif 2</option>
+                                <option value="Sumatif 3">Sumatif 3</option>
+                                <option value="Sumatif 4">Sumatif 4</option>
+                                <option value="Sumatif 5">Sumatif 5</option>
+                                <option value="Sumatif 6">Sumatif 6</option>
+                                <option value="ASAS">ASAS</option>
+                                <option value="ASAT">ASAT</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tahun Ajaran</label>
+                            <input type="text" id="setting-tahun-ajaran" class="input-control" placeholder="Contoh: 2023/2024">
+                        </div>
+                        <div class="form-group">
+                            <label>Semester</label>
+                            <input type="text" id="setting-semester" class="input-control" placeholder="Contoh: Ganjil / Genap">
+                        </div>
                         <div class="form-group">
                             <label>Mata Pelajaran</label>
                             <input type="text" id="setting-mapel" class="input-control" placeholder="Contoh: Matematika">
@@ -380,6 +408,33 @@
             </div>
             <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
                 <form id="form-soal">
+                    <div class="form-group">
+                        <label>Kategori (Jenis Ujian)</label>
+                        <select id="input-soal-jenis" class="input-control" required>
+                            <option value="Formatif 1">Formatif 1</option>
+                            <option value="Formatif 2">Formatif 2</option>
+                            <option value="Formatif 3">Formatif 3</option>
+                            <option value="Formatif 4">Formatif 4</option>
+                            <option value="Formatif 5">Formatif 5</option>
+                            <option value="Formatif 6">Formatif 6</option>
+                            <option value="Sumatif 1">Sumatif 1</option>
+                            <option value="Sumatif 2">Sumatif 2</option>
+                            <option value="Sumatif 3">Sumatif 3</option>
+                            <option value="Sumatif 4">Sumatif 4</option>
+                            <option value="Sumatif 5">Sumatif 5</option>
+                            <option value="Sumatif 6">Sumatif 6</option>
+                            <option value="ASAS">ASAS</option>
+                            <option value="ASAT">ASAT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tahun Ajaran</label>
+                        <input type="text" id="input-soal-tahun" class="input-control" placeholder="Contoh: 2023/2024" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Semester</label>
+                        <input type="text" id="input-soal-semester" class="input-control" placeholder="Contoh: Ganjil / Genap" required>
+                    </div>
                     <div class="form-group">
                         <label>Tipe Soal</label>
                         <select id="input-soal-tipe" class="input-control" required>
