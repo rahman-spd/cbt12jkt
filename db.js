@@ -84,6 +84,13 @@ const DB = {
         data.push(soalObj);
         await this.saveSoal(data);
     },
+    async updateSoal(soalObj) {
+        let data = await this.getSoal();
+        const index = data.findIndex(s => s.id === soalObj.id);
+        if (index === -1) throw new Error("Soal tidak ditemukan.");
+        data[index] = soalObj;
+        await this.saveSoal(data);
+    },
     async deleteSoal(id) {
         let data = await this.getSoal();
         data = data.filter(s => s.id !== id);

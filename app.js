@@ -67,6 +67,8 @@ const App = {
             if (btnDel) this.deleteSiswa(btnDel.dataset.nis);
         });
         document.getElementById('table-soal').addEventListener('click', (e) => {
+            const btnEdit = e.target.closest('.btn-edit-soal');
+            if (btnEdit) this.editSoal(btnEdit.dataset.id);
             const btnDel = e.target.closest('.btn-delete-soal');
             if (btnDel) this.deleteSoal(btnDel.dataset.id);
         });
@@ -188,6 +190,7 @@ const App = {
             document.getElementById('form-soal').reset();
             document.getElementById('preview-soal-gambar').style.display = 'none';
             this.renderOpsiEditor();
+            this.editingSoalId = null;
             this.showModal('modal-soal');
         });
         
@@ -254,8 +257,15 @@ const App = {
             }
 
             try {
-                await DB.addSoal(soalObj);
-                Swal.fire('Sukses', 'Soal berhasil disimpan', 'success');
+                if (this.editingSoalId) {
+                    soalObj.id = this.editingSoalId;
+                    await DB.updateSoal(soalObj);
+                    Swal.fire('Sukses', 'Soal berhasil diperbarui', 'success');
+                } else {
+                    await DB.addSoal(soalObj);
+                    Swal.fire('Sukses', 'Soal berhasil disimpan', 'success');
+                }
+                this.editingSoalId = null;
                 this.closeModal();
                 this.renderTableSoal();
             } catch(e) { Swal.fire('Error', e.message, 'error')}
@@ -510,7 +520,8 @@ const App = {
                 <td style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.teks}</td>
                 <td><b>${s.jawabanBenar.join(', ')}</b></td>
                 <td>
-                    <button class="btn btn-danger btn-sm btn-delete-soal" data-id="${s.id}"><i class="ri-delete-bin-line"></i></button>
+                    <button class="btn btn-outline btn-sm btn-edit-soal" data-id="${s.id}" title="Edit"><i class="ri-edit-2-line"></i></button>
+                    <button class="btn btn-danger btn-sm btn-delete-soal" data-id="${s.id}" title="Hapus"><i class="ri-delete-bin-line"></i></button>
                 </td>
             </tr>
         `).join('');
@@ -520,6 +531,57 @@ const App = {
             await DB.deleteSoal(id);
             this.renderTableSoal();
         }
+    },
+    async editSoal(id) {
+        const data = await DB.getSoal();
+        const soal = data.find(s => s.id === id);
+        if (!soal) return;
+        
+        document.getElementById('input-soal-jenis').value = soal.jenisUjian || 'Formatif 1';
+        document.getElementById('input-soal-tahun').value = soal.tahunAjaran || '';
+        document.getElementById('input-soal-semester').value = soal.semester || '';
+        document.getElementById('input-soal-tipe').value = soal.tipe;
+        document.getElementById('input-soal-teks').value = soal.teks;
+        
+        if (soal.imgData) {
+            const imgEl = document.getElementById('preview-soal-gambar');
+            imgEl.src = soal.imgData;
+            imgEl.style.display = 'block';
+        } else {
+            document.getElementById('preview-soal-gambar').style.display = 'none';
+        }
+        
+        this.renderOpsiEditor();
+
+        if (soal.tipe === 'PG') {
+            soal.opsi.forEach(o => {
+                const el = document.getElementById(`opsi-${o.label}`);
+                if (el) el.value = o.text;
+            });
+            if (soal.jawabanBenar.length > 0) {
+                document.getElementById('key-pg').value = soal.jawabanBenar[0];
+            }
+        } else if (soal.tipe === 'Kompleks') {
+            soal.opsi.forEach((o, index) => {
+                const num = index + 1;
+                const el = document.getElementById(`opsi-kompleks-${num}`);
+                if (el) el.value = o.text;
+            });
+            document.querySelectorAll('.key-kompleks').forEach(cb => {
+                if (soal.jawabanBenar.includes(cb.value)) {
+                    cb.checked = true;
+                } else {
+                    cb.checked = false;
+                }
+            });
+        } else if (soal.tipe === 'BS') {
+            if (soal.jawabanBenar.length > 0) {
+                document.getElementById('key-bs').value = soal.jawabanBenar[0];
+            }
+        }
+        
+        this.editingSoalId = id;
+        this.showModal('modal-soal');
     },
 
     // --- HASIL ---
